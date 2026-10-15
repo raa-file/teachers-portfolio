@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>الأثر التعليمي والمهني | الثانوية الثالثة بالظهران</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@300;400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{
+  --paper:#F2F5F3; --surface:#FFFFFF; --ink:#16302C; --muted:#5F726E;
+  --line:#DCE4E1; --teal:#0E6B60; --teal-soft:#E2F0EC; --gold:#B08A4E; --danger:#B3413A;
+  --s1:#FFFFFF; --s2:#E8789C; --s3:#E9C33B; --s4:#EE8A35; --s5:#D2433B; --s6:#3E9B5A; --s7:#3B7DD8; --s8:#8256C2;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --paper:#0F1B19; --surface:#172724; --ink:#E6EFEC; --muted:#93A8A3;
+    --line:#29403B; --teal:#4FBFAD; --teal-soft:#1D3934; --gold:#D2B07A; --danger:#E07A72;
+    --s1:#F4F4F4;
+    color-scheme:dark;
+  }
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Readex Pro",system-ui,sans-serif;background:var(--paper);color:var(--ink);line-height:1.65;min-height:100vh}
+.wrap{max-width:860px;margin:0 auto;padding:44px 20px 80px}
+
+.school{display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:.9rem;color:var(--muted);padding-bottom:20px;border-bottom:1px solid var(--line)}
+.school strong{color:var(--ink);font-weight:500}
+
+/* العنوان مع شريط ألوان التبويبات الثمانية */
+.hero{margin:38px 0 28px}
+.tabs-strip{display:flex;gap:6px;margin-bottom:22px}
+.tabs-strip i{flex:1;height:10px;border-radius:0 0 6px 6px}
+.tabs-strip i:first-child{box-shadow:inset 0 0 0 1px var(--line)}
+h1{font-weight:700;font-size:clamp(2.2rem,6.5vw,3.8rem);line-height:1.12;letter-spacing:-.01em}
+h1 span{display:block;font-weight:300;color:var(--teal);font-size:.62em;margin-top:6px}
+.intro{color:var(--muted);max-width:56ch;margin-top:14px}
+
+/* التبديل بين الصفحتين */
+.switch{display:inline-flex;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:4px;margin-bottom:22px}
+.switch button{background:none;color:var(--muted);padding:9px 18px;border-radius:10px}
+.switch button[aria-selected="true"]{background:var(--teal);color:var(--surface)}
+.view{display:none}.view.on{display:block}
+
+button{font:inherit;font-size:.92rem;font-weight:500;border:none;border-radius:10px;padding:10px 16px;cursor:pointer}
+button:focus-visible,summary:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+.primary{background:var(--teal);color:var(--surface)}
+.ghost{background:transparent;color:var(--teal);border:1px solid var(--teal)}
+
+/* البحث */
+.tools{display:flex;gap:12px;align-items:center;margin-bottom:16px;flex-wrap:wrap}
+.search{flex:1;min-width:220px;font:inherit;font-size:1rem;padding:13px 16px;border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--ink)}
+.search:focus{outline:2px solid var(--teal);outline-offset:1px;border-color:transparent}
+.count{font-size:.9rem;color:var(--muted)}
+
+/* قائمة المعلمات */
+.list{list-style:none;background:var(--surface);border:1px solid var(--line);border-radius:18px;overflow:hidden}
+.row{border-bottom:1px solid var(--line)}
+.row:last-child{border-bottom:none}
+.link{display:grid;grid-template-columns:40px 1fr auto;align-items:center;gap:6px 14px;padding:16px 20px;color:inherit;text-decoration:none;transition:background .15s}
+a.link:hover{background:var(--teal-soft)}
+a.link:focus-visible{outline:2px solid var(--teal);outline-offset:-2px}
+.num{font-size:.85rem;color:var(--gold);font-weight:500;font-variant-numeric:tabular-nums;grid-row:span 2}
+.name{font-size:1.06rem;font-weight:500}
+div.link .name{color:var(--muted)}
+.status{font-size:.82rem;font-weight:500;padding:6px 12px;border-radius:999px;white-space:nowrap;grid-row:span 2}
+.status.ok{background:var(--teal-soft);color:var(--teal)}
+.status.soon{color:var(--muted);border:1px dashed var(--line)}
+.dots{display:flex;gap:5px;align-items:center}
+.dots b{width:11px;height:11px;border-radius:50%;border:1.5px solid var(--sc);background:transparent}
+.dots b.done{background:var(--sc)}
+.dots b.w{border-color:#B9C4C1}
+.dots small{font-size:.78rem;color:var(--muted);margin-inline-start:6px}
+.empty{padding:40px 20px;text-align:center;color:var(--muted)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.8rem;color:var(--muted);margin-top:14px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend b{width:10px;height:10px;border-radius:50%;background:var(--sc)}
+.legend b.w{box-shadow:inset 0 0 0 1.5px #B9C4C1}
+
+/* وضع التعديل */
+.editbar{display:none;background:var(--teal-soft);border:1px solid var(--teal);border-radius:16px;padding:18px 20px;margin-bottom:20px}
+.editing .editbar{display:block}
+.editbar h2{font-size:1.05rem;font-weight:700;color:var(--teal);margin-bottom:6px}
+.editbar p{font-size:.92rem;margin-bottom:14px}
+.btns{display:flex;gap:10px;flex-wrap:wrap}
+.edit-row{display:grid;grid-template-columns:40px 1fr;gap:8px 14px;padding:16px 20px}
+.fields{display:flex;flex-direction:column;gap:8px}
+.fields input{font:inherit;font-size:.95rem;padding:9px 12px;border:1px solid var(--line);border-radius:9px;background:var(--paper);color:var(--ink);width:100%}
+.fields input.url{direction:ltr;text-align:left}
+.fields input:focus{outline:2px solid var(--teal);border-color:transparent}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-size:.78rem;font-weight:400;padding:5px 10px;border-radius:999px;background:var(--paper);color:var(--muted);border:1px solid var(--line);display:inline-flex;align-items:center;gap:6px}
+.chip b{width:9px;height:9px;border-radius:50%;border:1.5px solid var(--sc)}
+.chip b.w{border-color:#B9C4C1}
+.chip[aria-pressed="true"]{color:var(--ink);border-color:var(--ink)}
+.chip[aria-pressed="true"] b{background:var(--sc)}
+.del{align-self:flex-start;background:none;color:var(--danger);padding:4px 0;font-size:.85rem}
+.add-row{padding:16px 20px;border-top:1px dashed var(--line)}
+
+/* دليل الملف */
+.rule{background:var(--ink);color:var(--paper);border-radius:18px;padding:22px 24px;margin-bottom:22px}
+.rule p{font-size:.88rem;opacity:.75}
+.rule strong{display:block;font-size:clamp(1.2rem,3.6vw,1.6rem);font-weight:700;margin-top:4px}
+.sections{display:flex;flex-direction:column;gap:10px}
+details.sec{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;border-inline-start:8px solid var(--sc)}
+details.sec.white{border-inline-start-color:#E3E8E6}
+summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center;padding:16px 18px}
+summary::-webkit-details-marker{display:none}
+.sec-n{font-weight:700;color:var(--gold);font-variant-numeric:tabular-nums}
+.sec-t{font-weight:500;font-size:1.02rem}
+.sec-t small{display:block;font-weight:400;font-size:.8rem;color:var(--muted)}
+.sec-c{font-size:.8rem;color:var(--muted);white-space:nowrap}
+.sec-body{padding:0 18px 18px;border-top:1px solid var(--line);padding-top:14px}
+.sec-body h3{font-size:.88rem;font-weight:700;color:var(--teal);margin:12px 0 6px}
+.sec-body h3:first-child{margin-top:0}
+.sec-body ul{padding-inline-start:20px;font-size:.94rem}
+.sec-body li{margin-bottom:3px}
+.sec-body p{font-size:.94rem}
+.seq{display:flex;flex-wrap:wrap;gap:6px;font-size:.85rem}
+.seq span{background:var(--teal-soft);color:var(--teal);padding:4px 10px;border-radius:8px}
+table{width:100%;border-collapse:collapse;font-size:.88rem;margin-top:4px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:right}
+th{background:var(--paper);font-weight:500}
+.note{font-size:.88rem;color:var(--muted);margin-top:8px}
+.block{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px 22px;margin-top:22px}
+.block h2{font-size:1.15rem;font-weight:700;margin-bottom:12px}
+.block ul{padding-inline-start:20px}
+.block li{margin-bottom:6px}
+.mail{direction:ltr;unicode-bidi:isolate;font-weight:500;color:var(--teal)}
+
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--paper);padding:12px 20px;border-radius:12px;font-size:.92rem;opacity:0;pointer-events:none;transition:.25s}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+footer{margin-top:28px;text-align:center}
+
+@media (max-width:560px){
+  .wrap{padding-top:26px}
+  .school{flex-direction:column;align-items:flex-start;gap:2px}
+  .link{grid-template-columns:28px 1fr;padding:14px 16px}
+  .num{grid-row:span 3}
+  .status{grid-row:auto;justify-self:start}
+  .edit-row{grid-template-columns:28px 1fr;padding:14px 16px}
+  summary{grid-template-columns:auto 1fr}
+  .sec-c{grid-column:2}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* ===== لوحة التحكم ===== */
+.hidden{display:none!important}
+.loading{padding:40px 20px;text-align:center;color:var(--muted)}
+.admin-link{display:inline-block;margin-top:26px;font-size:.85rem;color:var(--muted);text-decoration:none;border-bottom:1px dashed var(--line)}
+.admin-link:hover{color:var(--teal)}
+
+.login{max-width:420px;margin:60px auto 0;background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:30px 26px}
+.login h2{font-size:1.4rem;font-weight:700;margin-bottom:4px}
+.login p{color:var(--muted);font-size:.92rem;margin-bottom:20px}
+.login label{display:block;font-size:.85rem;font-weight:500;margin:12px 0 6px}
+.login input{width:100%;font:inherit;padding:12px 14px;border:1px solid var(--line);border-radius:11px;background:var(--paper);color:var(--ink)}
+.login input[type=email],.login input[type=password]{direction:ltr;text-align:left}
+.login input:focus{outline:2px solid var(--teal);border-color:transparent}
+.login .primary{width:100%;margin-top:20px;padding:13px}
+.err{color:var(--danger);font-size:.88rem;margin-top:12px;min-height:1.2em}
+.back{display:inline-block;margin-top:16px;font-size:.88rem;color:var(--muted)}
+
+.dash-top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin:30px 0 22px}
+.dash-top h1{font-size:clamp(1.6rem,4.5vw,2.3rem);margin:0}
+.dash-top h1 span{font-size:.5em}
+.who{font-size:.85rem;color:var(--muted)}
+
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:22px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px 18px}
+.stat small{display:block;font-size:.8rem;color:var(--muted)}
+.stat strong{display:block;font-size:1.9rem;font-weight:700;line-height:1.2;margin-top:4px;font-variant-numeric:tabular-nums}
+.stat.accent strong{color:var(--teal)}
+.stat.warn strong{color:var(--gold)}
+.bar{height:6px;border-radius:6px;background:var(--line);margin-top:10px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--teal);border-radius:6px;transition:width .3s}
+
+.seg{display:inline-flex;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:3px}
+.seg button{background:none;color:var(--muted);padding:8px 14px;font-size:.85rem}
+.seg button[aria-pressed="true"]{background:var(--teal-soft);color:var(--teal)}
+
+.drow{display:grid;grid-template-columns:40px 1fr;gap:10px 14px;padding:18px 20px;border-bottom:1px solid var(--line)}
+.drow:last-child{border-bottom:none}
+.drow .head{display:flex;gap:10px;align-items:center}
+.drow .head input{flex:1;font-weight:500}
+.urlwrap{display:flex;gap:8px}
+.urlwrap input{flex:1}
+.open{font-size:.82rem;padding:8px 12px;text-decoration:none;border-radius:9px;background:var(--teal-soft);color:var(--teal);display:inline-flex;align-items:center;white-space:nowrap}
+.open.off{opacity:.35;pointer-events:none}
+.saved{font-size:.78rem;color:var(--muted);min-width:64px;text-align:left}
+.saved.ok{color:var(--teal)}
+.saved.bad{color:var(--danger)}
+.drow .fields input{font:inherit;font-size:.95rem;padding:9px 12px;border:1px solid var(--line);border-radius:9px;background:var(--paper);color:var(--ink);width:100%}
+.drow .fields input.url{direction:ltr;text-align:left}
+.drow .fields input:focus{outline:2px solid var(--teal);border-color:transparent}
+.drow .fields{display:flex;flex-direction:column;gap:10px}
+.drow .foot{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.setup{background:var(--surface);border:1px dashed var(--gold);border-radius:16px;padding:18px 20px;margin-top:20px;font-size:.92rem}
+.setup code{direction:ltr;unicode-bidi:isolate;background:var(--paper);padding:2px 6px;border-radius:6px;font-size:.85rem}
+
+@media (max-width:640px){
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .drow{grid-template-columns:28px 1fr;padding:14px 16px}
+  .urlwrap{flex-wrap:wrap}
+}
+</style>
+</head>
+<body>
+<div class="wrap" id="app">
+
+  <header class="school">
+    <strong>الثانوية الثالثة بالظهران</strong>
+    <span>الإدارة العامة للتعليم بالمنطقة الشرقية</span>
+  </header>
+
+  <!-- ========== الصفحة العامة ========== -->
+  <div id="page-public">
+    <section class="hero">
+      <div class="tabs-strip" aria-hidden="true" id="strip"></div>
+      <h1>الأثر التعليمي والمهني<span>ملفات معلمات الثانوية الثالثة بالظهران</span></h1>
+      <p class="intro">اضغطي على اسم المعلمة لفتح ملفها، والدوائر الملوّنة تبيّن الأقسام المكتملة في الملف حسب ألوان التبويبات.</p>
+    </section>
+
+    <div class="switch" role="tablist">
+      <button role="tab" aria-selected="true" data-view="teachers">ملفات المعلمات</button>
+      <button role="tab" aria-selected="false" data-view="guide">دليل إعداد الملف</button>
+    </div>
+
+    <section class="view on" id="view-teachers">
+      <div class="tools">
+        <input class="search" id="search" type="search" placeholder="ابحثي باسم المعلمة" aria-label="بحث">
+        <span class="count" id="count"></span>
+      </div>
+      <ul class="list" id="list"><li class="loading">جارٍ تحميل الأسماء…</li></ul>
+      <div class="legend" id="legend"></div>
+    </section>
+
+    <section class="view" id="view-guide">
+    <div class="rule">
+      <p>تذكّري القاعدة</p>
+      <strong>لكل ممارسة قوية: شاهد تنفيذ + دليل أثر</strong>
+    </div>
+    <div class="sections" id="sections"></div>
+
+    <div class="block">
+      <h2>البطاقة الموحدة لكل شاهد</h2>
+      <p class="note" style="margin:0 0 10px">توضع أمام كل شاهد بطاقة لا تتجاوز نصف صفحة:</p>
+      <table>
+        <tr><th>العنصر</th><th>البيانات</th></tr>
+        <tr><td>عنوان الشاهد</td><td></td></tr>
+        <tr><td>الهدف</td><td></td></tr>
+        <tr><td>الفئة المستهدفة</td><td></td></tr>
+        <tr><td>وصف التنفيذ</td><td></td></tr>
+        <tr><td>النتيجة أو الأثر</td><td></td></tr>
+        <tr><td>مؤشر التقويم المرتبط</td><td></td></tr>
+        <tr><td>المرفق</td><td>صورة، نموذج، نتيجة، رابط</td></tr>
+      </table>
+    </div>
+
+    <div class="block">
+      <h2>عند إعداد الملف يلزم الآتي</h2>
+      <ul>
+        <li>إعداد الملف من خلال <span dir="ltr">Google Sites</span>.</li>
+        <li>مشاركة الرابط على إيميل المديرة <span class="mail">Tssdm155810@gmail.com</span> مع إعطاء صلاحية العرض.</li>
+        <li>غلاف بعنوان: ملف الأثر التعليمي والمهني للمعلمة ….</li>
+        <li>فهرس إلكتروني قابل للنقر.</li>
+        <li>الالتزام بألوان التبويبات المحددة.</li>
+        <li>ترقيم واضح للشواهد.</li>
+        <li>صفحة واحدة لعرض التحسن بالأرقام.</li>
+        <li>استخدام رمز <span dir="ltr">QR</span> للملفات الكبيرة.</li>
+        <li>عينات منتقاة من أفضل أعمال الطالبات.</li>
+        <li>كتابة الأثر بجملة واضحة تحت كل شاهد.</li>
+        <li>الانتهاء من الملف خلال أسبوعين كحدٍّ أقصى، كتقييم مبدئي قبل زيارة فريق التقويم الخارجي.</li>
+      </ul>
+    </div>
+  </section>
+
+    <div style="text-align:center"><a class="admin-link" href="#admin">دخول الإدارة</a></div>
+  </div>
+
+  <!-- ========== تسجيل الدخول ========== -->
+  <div id="page-login" class="hidden">
+    <form class="login" id="loginForm">
+      <h2>لوحة تحكم الإدارة</h2>
+      <p>سجّلي الدخول لإضافة روابط ملفات المعلمات ومتابعة اكتمالها.</p>
+      <label for="email">البريد الإلكتروني</label>
+      <input id="email" type="email" autocomplete="username" required>
+      <label for="password">كلمة المرور</label>
+      <input id="password" type="password" autocomplete="current-password" required>
+      <button class="primary" type="submit">دخول</button>
+      <div class="err" id="loginErr" role="alert"></div>
+      <a class="back" href="#">العودة للصفحة الرئيسية</a>
+    </form>
+    <div class="setup hidden" id="setupNote">
+      لوحة التحكم غير مربوطة بقاعدة بيانات بعد. أضيفي قيمتي
+      <code>SUPABASE_URL</code> و <code>SUPABASE_ANON_KEY</code>
+      في أعلى الكود حسب ملف التعليمات.
+      <br><a class="back" href="#">العودة للصفحة الرئيسية</a>
+    </div>
+  </div>
+
+  <!-- ========== لوحة التحكم ========== -->
+  <div id="page-dash" class="hidden">
+    <div class="dash-top">
+      <div>
+        <h1>لوحة التحكم<span>الأثر التعليمي والمهني</span></h1>
+        <div class="who" id="who"></div>
+      </div>
+      <div class="btns">
+        <a class="ghost open" href="#" style="padding:10px 16px;background:none;border:1px solid var(--teal)">عرض الصفحة العامة</a>
+        <button class="primary" id="logout">تسجيل الخروج</button>
+      </div>
+    </div>
+
+    <div class="stats" id="stats"></div>
+
+    <form class="block" id="addForm" style="margin:0 0 22px">
+      <h2>إضافة معلمة</h2>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <input id="newName" class="search" placeholder="الاسم" required style="min-width:200px;flex:1.3">
+        <input id="newUrl" class="search" placeholder="رابط الملف (اختياري)" style="direction:ltr;text-align:left;min-width:200px">
+        <button class="primary" type="submit">إضافة</button>
+      </div>
+    </form>
+
+    <div class="tools">
+      <input class="search" id="dsearch" type="search" placeholder="ابحثي باسم المعلمة" aria-label="بحث">
+      <div class="seg" id="filters">
+        <button aria-pressed="true" data-f="all">الكل</button>
+        <button aria-pressed="false" data-f="missing">بدون رابط</button>
+        <button aria-pressed="false" data-f="linked">برابط</button>
+      </div>
+    </div>
+    <p class="note" style="margin:0 0 12px">التعديلات تُحفظ تلقائيًا بمجرد الخروج من الحقل أو الضغط على القسم.</p>
+    <ul class="list" id="dlist"></ul>
+  </div>
+</div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+const SECTIONS = [
+  {t:'التعريف المهني', c:'الأبيض', v:'--s1', n:3,
+   inc:['البيانات الأساسية','المؤهل والتخصص والخبرة','الصفوف والمقررات المسندة','الرخصة المهنية','جدول الحصص والتكليفات إن وجد'],
+   ev:'السيرة الذاتية المختصرة، الرخصة المهنية، جدول الحصص.'},
+  {t:'الأهداف المهنية والتخطيط للتدريس', c:'الوردي', v:'--s2', n:3,
+   inc:['هدفان مهنيان قابلان للقياس','ارتباطهما باحتياجات الطالبات وخطة المدرسة','نموذج واحد متميز للتخطيط','مراعاة الفروق الفردية','خطة مختصرة للمعالجة والإثراء'],
+   ev:'بطاقة الأهداف المهنية، نموذج تخطيط درس متكامل، خطة علاجية أو إثرائية مختصرة.'},
+  {t:'الممارسات التعليمية المتميزة', c:'الأصفر', v:'--s3', n:4,
+   inc:['تنوع استراتيجيات التدريس','تكافؤ فرص التعلم','توظيف التقنية','الأنشطة التطبيقية','تنمية التفكير والبحث والابتكار','رفع دافعية الطالبات','مراعاة المتعثرات والمتفوقات'],
+   ev:'نشاط تعلمي متميز، نشاط يراعي الفروق الفردية، تطبيق رقمي أو منتج لطالبة، بطاقة ملاحظة صفية أو تغذية راجعة.'},
+  {t:'تقويم التعلم وتحسين النواتج', c:'البرتقالي', v:'--s4', n:5,
+   inc:['تقويم قبلي أو تشخيصي','تحليل النتائج','تحديد المهارات غير المتقنة','تنفيذ خطة علاجية أو إثرائية','تقويم بعدي','مقارنة النتائج قبل التدخل وبعده','رسوم أو جدول يوضح مقدار التحسن'],
+   seq:['الفجوة','القياس القبلي','التدخل','القياس البعدي','مقدار التحسن','القرار التالي'],
+   ev:'نشاط تعلمي متميز، نشاط يراعي الفروق الفردية، تطبيق رقمي أو منتج لطالبة، بطاقة ملاحظة صفية أو تغذية راجعة.'},
+  {t:'البرامج والمبادرات والشراكات', c:'الأحمر', v:'--s5', n:3,
+   inc:['المبادرات والبرامج التعليمية أو التربوية','الأنشطة الإثرائية','مشاركة الأسرة في دعم التعلم','المشاركات المجتمعية والتطوعية','البرامج الداعمة للقيم والسلوك والهوية الوطنية'],
+   ev:'بطاقة مختصرة للمبادرة أو البرنامج، عينة من التنفيذ، أداة قياس الأثر، نتيجة أو توصية.',
+   note:'لا يشترط كثرة البرامج؛ مبادرة واحدة موثقة الأثر أقوى من عدة برامج موثقة بالصور فقط.'},
+  {t:'التطوير المهني ومجتمعات التعلم', c:'الأخضر', v:'--s6', n:3,
+   inc:['البرامج التدريبية المرتبطة بالاحتياج','التعلم الذاتي','مجتمعات التعلم المهنية','الزيارات التبادلية','نقل الخبرة للزميلات','تطبيق ما تعلمته المعلمة داخل الصف'],
+   ev:'شهادة أو إثبات تعلم مهني، نموذج لما طبقته المعلمة، أثر التطبيق في أداء الطالبات، محضر أو منتج مجتمع تعلم مهني.',
+   table:{title:'النموذج المختصر', head:['تعلمت','طبقت','ظهر الأثر في']}},
+  {t:'التغذية الراجعة والتقويم الذاتي', c:'الأزرق', v:'--s7', n:3,
+   inc:['التغذية الراجعة من الزيارات الصفية','رأي الطالبات أو المستفيدات','أبرز نقاط القوة','فرصة تحسين واحدة','الإجراء الذي اتخذته المعلمة','أثر التحسين'],
+   ev:'بطاقة ملاحظة أو تغذية راجعة، تأمل مهني مختصر، إجراء التحسين، شاهد على تطبيقه.',
+   table:{title:'نموذج التأمل المختصر', head:['ما الذي نجح؟','ما الدليل؟','ما الذي يحتاج إلى تحسين؟','ماذا سأفعل؟','كيف سأقيس التحسن؟']}},
+  {t:'ملخص الأثر وخطة التطوير', c:'البنفسجي', v:'--s8', n:1,
+   inc:['أبرز ثلاثة إنجازات','أهم تحسن تحقق لدى الطالبات','ممارسة ناجحة تستحق الاستمرار','تحدٍّ ما زال قائمًا','أولوية التطوير القادمة','الاحتياج التدريبي للمعلمة'],
+   board:[['إتقان المهارة المستهدفة','58%','84%','+26%'],['إنجاز المهمات','72%','91%','+19%'],['المشاركة الصفية','65%','88%','+23%']]}
+];
+
+
+
+/* ================= الإعدادات =================
+   ضعي هنا بيانات مشروع Supabase
+   (Project Settings → API)                     */
+const SUPABASE_URL = "https://anornaqzspgovxcbjbuo.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFub3JuYXF6c3Bnb3Z4Y2JqYnVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIwNDg5NTQsImV4cCI6MjEwNzYyNDk1NH0.jLyOZKOnfhteW4LynlparZyE6oHR_GOBNbnqu1uQCgw";
+/* ============================================= */
+
+const DEFAULT_TEACHERS = ["نورة مبارك سعيد الدوسري","بدرية علي مبارك القحطاني","نوال حسين راشد آل ساري","الشريفة فرحان حربي الخالدي","ريم سعيد عبدالله سله القحطاني","فوزية سعيد علي عسيري","نورة يوسف أحمد الهايم","نوال ضاوي فالح العتيبي","بدرية عبيد عبدالله الحربي","رنا عبدالعزيز أحمد الأسمري","ريم عوض سلطان القرني","عهود حمد محمد الدبيان","أماني محمد أحمد النعيم","تغريد أحمد محمد الثقفي","أسماء احمد حماد المالكي","عواطف أحمد سعيد الزهراني","مها علوش ناصر السبيعي","نورة صالح سالم العواد","هيا موفي محمد الولماني","شريفه سعيد محمد عسيري","هيا عديس خشين القحطاني","مشاعل محمد خلف العساف","اشواق جارالله عبدالله المحيميد","هيفاء البكر"];
+
+const configured = SUPABASE_URL && SUPABASE_ANON_KEY;
+const sb = configured ? supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const normalize = s => (s||'').replace(/[أإآ]/g,'ا').replace(/ة/g,'ه').replace(/ى/g,'ي').toLowerCase();
+const fixUrl = u => { u = (u||'').trim(); return u && !/^https?:\/\//i.test(u) ? 'https://' + u : u; };
+const toast = msg => { const t=$('toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove('show'),2400); };
+const dotCls = (i,on) => (on?'done ':'') + (i===0?'w':'');
+
+// دليل الأقسام
+$('sections').innerHTML = SECTIONS.map((s,i)=>`
+  <details class="sec ${i===0?'white':''}" style="--sc:var(${s.v})">
+    <summary>
+      <span class="sec-n">${i+1}</span>
+      <span class="sec-t">${s.t}<small>تبويب اللون ${s.c}</small></span>
+      <span class="sec-c">${s.n} ${s.n===1?'شاهد':'شواهد'}</span>
+    </summary>
+    <div class="sec-body">
+      <h3>يتضمن</h3>
+      <ul>${s.inc.map(x=>`<li>${x}</li>`).join('')}</ul>
+      ${s.seq?`<h3>يُعرض كل تدخل وفق التسلسل</h3><div class="seq">${s.seq.map(x=>`<span>${x}</span>`).join('<span aria-hidden="true">←</span>')}</div>`:''}
+      ${s.ev?`<h3>الشواهد</h3><p>${s.ev}</p>`:''}
+      ${s.note?`<p class="note">${s.note}</p>`:''}
+      ${s.table?`<h3>${s.table.title}</h3><table><tr>${s.table.head.map(h=>`<th>${h}</th>`).join('')}</tr><tr>${s.table.head.map(()=>'<td>&nbsp;</td>').join('')}</tr></table>`:''}
+      ${s.board?`<h3>مثال للوحة الأثر السنوي</h3><table><tr><th>مجال التحسن</th><th>بداية العام</th><th>نهاية العام</th><th>مقدار التحسن</th></tr>${s.board.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('')}</table>`:''}
+    </div>
+  </details>`).join('') + `
+  <p class="note">المجموع التقريبي: 25 شاهدًا نوعيًا.</p>`;
+
+let teachers = [];
+let pubQuery = '', admQuery = '', admFilter = 'all';
+
+/* ---------- البيانات ---------- */
+async function load(){
+  if(!sb){
+    teachers = DEFAULT_TEACHERS.map((name,i)=>({id:i+1,name,url:'',done:[],sort:i+1}));
+    return;
+  }
+  const {data, error} = await sb.from('teachers').select('*').order('sort',{ascending:true}).order('id',{ascending:true});
+  if(error){ console.error(error); toast('تعذّر تحميل البيانات'); teachers = []; return; }
+  teachers = data.map(t => ({...t, done: t.done || []}));
+}
+
+/* ---------- الصفحة العامة ---------- */
+$('strip').innerHTML = SECTIONS.map(s=>`<i style="background:var(${s.v})"></i>`).join('');
+$('legend').innerHTML = SECTIONS.map((s,i)=>`<span><b class="${i===0?'w':''}" style="--sc:var(${s.v})"></b>${i+1}. ${s.t}</span>`).join('');
+
+function dots(t){
+  return `<span class="dots" aria-label="${t.done.length} من 8 أقسام مكتملة">${
+    SECTIONS.map((s,i)=>`<b class="${dotCls(i,t.done.includes(i+1))}" style="--sc:var(${s.v})"></b>`).join('')
+  }<small>${t.done.length}/8</small></span>`;
+}
+
+function renderPublic(){
+  const q = normalize(pubQuery.trim());
+  const shown = teachers.map((t,i)=>({...t,n:i+1})).filter(t => !q || normalize(t.name).includes(q));
+  $('count').textContent = `${teachers.filter(t=>t.url).length} من ${teachers.length} ملفًا متاحًا`;
+  $('list').innerHTML = shown.length ? shown.map(t => {
+    const inner = `<span class="num">${t.n}</span><span class="name">${esc(t.name)}</span>
+      <span class="status ${t.url?'ok':'soon'}">${t.url?'فتح الملف':'لم يُرفع بعد'}</span>${dots(t)}`;
+    return `<li class="row">${t.url
+      ? `<a class="link" href="${esc(t.url)}" target="_blank" rel="noopener">${inner}</a>`
+      : `<div class="link">${inner}</div>`}</li>`;
+  }).join('') : `<li class="empty">${teachers.length ? 'لا يوجد اسم مطابق. جرّبي جزءًا آخر من الاسم.' : 'لا توجد أسماء بعد.'}</li>`;
+}
+
+$('search').addEventListener('input', e => { pubQuery = e.target.value; renderPublic(); });
+document.querySelectorAll('.switch button').forEach(b => b.addEventListener('click', () => {
+  document.querySelectorAll('.switch button').forEach(x => x.setAttribute('aria-selected', x===b));
+  document.querySelectorAll('.view').forEach(v => v.classList.toggle('on', v.id === 'view-' + b.dataset.view));
+}));
+
+/* ---------- لوحة التحكم ---------- */
+function stats(){
+  const total = teachers.length;
+  const linked = teachers.filter(t=>t.url).length;
+  const full = teachers.filter(t=>t.done.length===8).length;
+  const avg = total ? Math.round(teachers.reduce((a,t)=>a+t.done.length,0) / (total*8) * 100) : 0;
+  $('stats').innerHTML = `
+    <div class="stat"><small>عدد المعلمات</small><strong>${total}</strong></div>
+    <div class="stat accent"><small>ملفات برابط</small><strong>${linked}</strong><div class="bar"><i style="width:${total?linked/total*100:0}%"></i></div></div>
+    <div class="stat warn"><small>بانتظار الرابط</small><strong>${total-linked}</strong></div>
+    <div class="stat"><small>نسبة اكتمال الأقسام</small><strong>${avg}%</strong><div class="bar"><i style="width:${avg}%"></i></div><small style="margin-top:6px">${full} ملف مكتمل</small></div>`;
+}
+
+function renderAdmin(){
+  stats();
+  const q = normalize(admQuery.trim());
+  const shown = teachers.map((t,i)=>({...t,n:i+1})).filter(t =>
+    (!q || normalize(t.name).includes(q)) &&
+    (admFilter==='all' || (admFilter==='missing' ? !t.url : !!t.url)));
+  $('dlist').innerHTML = shown.length ? shown.map(t => `
+    <li class="drow" data-id="${t.id}">
+      <span class="num">${t.n}</span>
+      <div class="fields">
+        <input value="${esc(t.name)}" data-k="name" aria-label="اسم المعلمة">
+        <div class="urlwrap">
+          <input class="url" value="${esc(t.url)}" data-k="url" placeholder="https://sites.google.com/..." aria-label="رابط ملف الأثر">
+          <a class="open ${t.url?'':'off'}" href="${esc(t.url)}" target="_blank" rel="noopener">فتح</a>
+        </div>
+        <div class="chips">${SECTIONS.map((s,k)=>`<button class="chip" aria-pressed="${t.done.includes(k+1)}" data-sec="${k+1}" style="--sc:var(${s.v})"><b class="${k===0?'w':''}"></b>${s.t}</button>`).join('')}</div>
+        <div class="foot">
+          <button class="del" data-del>حذف المعلمة</button>
+          <span class="saved"></span>
+        </div>
+      </div>
+    </li>`).join('') : `<li class="empty">لا توجد نتائج.</li>`;
+}
+
+async function save(id, patch, rowEl){
+  const t = teachers.find(x=>x.id==id); Object.assign(t, patch);
+  const flag = rowEl?.querySelector('.saved');
+  if(flag){ flag.className='saved'; flag.textContent='جارٍ الحفظ…'; }
+  if(!sb){ if(flag){flag.className='saved bad'; flag.textContent='غير متصل';} return; }
+  const {error} = await sb.from('teachers').update(patch).eq('id', id);
+  if(flag){ flag.className = 'saved ' + (error?'bad':'ok'); flag.textContent = error ? 'لم يُحفظ' : 'تم الحفظ ✓'; }
+  if(error){ console.error(error); toast('تعذّر الحفظ، تأكدي من تسجيل الدخول'); }
+  stats();
+}
+
+$('dlist').addEventListener('change', e => {
+  const el = e.target, row = el.closest('.drow'); if(!row || !el.dataset.k) return;
+  let v = el.value.trim();
+  if(el.dataset.k==='url'){ v = fixUrl(v); el.value = v; const a=row.querySelector('.open'); a.href=v; a.classList.toggle('off',!v); }
+  if(el.dataset.k==='name' && !v){ toast('الاسم لا يمكن أن يكون فارغًا'); return; }
+  save(row.dataset.id, {[el.dataset.k]: v}, row);
+});
+
+$('dlist').addEventListener('click', async e => {
+  const b = e.target.closest('button'), row = e.target.closest('.drow'); if(!b || !row) return;
+  const id = row.dataset.id, t = teachers.find(x=>x.id==id);
+  if(b.dataset.sec){
+    const s = +b.dataset.sec;
+    const done = t.done.includes(s) ? t.done.filter(x=>x!==s) : [...t.done, s].sort((a,c)=>a-c);
+    b.setAttribute('aria-pressed', done.includes(s));
+    save(id, {done}, row);
+  }
+  if(b.hasAttribute('data-del')){
+    if(!confirm(`حذف «${t.name}» من القائمة؟`)) return;
+    const {error} = await sb.from('teachers').delete().eq('id', id);
+    if(error){ toast('تعذّر الحذف'); return; }
+    teachers = teachers.filter(x=>x.id!=id); renderAdmin(); toast('تم الحذف');
+  }
+});
+
+$('addForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const name = $('newName').value.trim(), url = fixUrl($('newUrl').value);
+  if(!name) return;
+  const sort = teachers.length ? Math.max(...teachers.map(t=>t.sort||0)) + 1 : 1;
+  const {data, error} = await sb.from('teachers').insert({name, url, done:[], sort}).select().single();
+  if(error){ console.error(error); toast('تعذّرت الإضافة'); return; }
+  teachers.push({...data, done:data.done||[]});
+  $('newName').value=''; $('newUrl').value='';
+  admFilter='all'; setFilterBtns(); renderAdmin(); toast('تمت إضافة المعلمة');
+});
+
+$('dsearch').addEventListener('input', e => { admQuery = e.target.value; renderAdmin(); });
+function setFilterBtns(){ document.querySelectorAll('#filters button').forEach(x=>x.setAttribute('aria-pressed', x.dataset.f===admFilter)); }
+document.querySelectorAll('#filters button').forEach(b => b.addEventListener('click', () => { admFilter = b.dataset.f; setFilterBtns(); renderAdmin(); }));
+
+/* ---------- الدخول ---------- */
+$('loginForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  $('loginErr').textContent = '';
+  const btn = e.target.querySelector('button'); btn.disabled = true; btn.textContent = 'جارٍ الدخول…';
+  const {error} = await sb.auth.signInWithPassword({email:$('email').value.trim(), password:$('password').value});
+  btn.disabled = false; btn.textContent = 'دخول';
+  if(error){ $('loginErr').textContent = 'البريد أو كلمة المرور غير صحيحة'; return; }
+  route();
+});
+$('logout').addEventListener('click', async () => { await sb.auth.signOut(); location.hash = ''; });
+
+/* ---------- التوجيه ---------- */
+async function route(){
+  const admin = location.hash === '#admin';
+  $('page-public').classList.toggle('hidden', admin);
+  $('page-login').classList.add('hidden');
+  $('page-dash').classList.add('hidden');
+  if(!admin){ await load(); renderPublic(); return; }
+
+  if(!sb){ $('page-login').classList.remove('hidden'); $('loginForm').classList.add('hidden'); $('setupNote').classList.remove('hidden'); return; }
+  const {data:{session}} = await sb.auth.getSession();
+  if(!session){ $('page-login').classList.remove('hidden'); return; }
+  $('who').textContent = session.user.email;
+  $('page-dash').classList.remove('hidden');
+  await load(); renderAdmin();
+}
+window.addEventListener('hashchange', route);
+route();
+
+</script>
+</body>
+</html>
